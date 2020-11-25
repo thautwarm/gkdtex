@@ -1,0 +1,6 @@
+WS \s+
+Id [@a-zA-Z][@a-zA-Z]*
+Int [0-9]+
+COMMENT %.*$
+Other .
+%ignore COMMENT

@@ -1,0 +1,1 @@
+fff gkdtex.gg --trace --lexer_out gkdtex/lex.py  --parser_out gkdtex/parse.py

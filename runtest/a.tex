@@ -1,0 +1,27 @@
+\a 1 2 3
+\define{\F{^a}{^b}}{(#\a + #\b)} \define{\G{^a teX1}{^b}}{(#\a + #\b)}
+\define{\K{}{ }}{
+    \argsrc{#\1}
+}
+\define{\L{a}{a}}{#\1 + #\1}
+\begin{center}
+\F{kkk}{2}
+\verb{  1 {x : int, y : float} 2 3 3}
+\G{^b 2}
+\K{\a bb \K{a}{a} }
+
+\pyexec{expandbefore=False}{
+x = "\F{1}"
+}
+\pyeval{expandbefore=True, expandafter=True}{\F{f"{x}"}{"{1}"}}
+\end{center}
+\L
+
+\pyeval{ }{1 + 1}
+\define{\add{}{}}{#\1 + #\2}
+
+\pyexec{expandbefore=False}{
+    x = r"\add{1}"
+}
+
+\pyeval{expandbefore=False, expandafter=True}{x + "{1}"}

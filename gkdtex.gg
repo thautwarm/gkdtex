@@ -1,0 +1,120 @@
+%%inline
+import typing
+
+class Whitespace:
+    __slots__ = ['text']
+    def __init__(self, text: str):
+        self.text = text
+
+class PosGroup:
+    __slots__ = ['offs', 'obj']
+
+    def __init__(self, loff: int, obj: 'typing.Optional[Object]', roff: int):
+        self.offs = (loff, roff)
+        self.obj = obj
+
+class KwGroup:
+    __slots__ = ['offs', 'kw', 'obj']
+
+    def __init__(self, loff: int, kw: str, obj: 'typing.Optional[Object]' , roff: int):
+        self.offs = (loff, roff)
+        self.obj = obj
+        self.kw = kw
+
+Group = typing.Union[KwGroup, PosGroup]
+class Command:
+    def __init__(self, cmd: str, args: typing.Optional[typing.List[Group]]):
+        self.cmd = cmd
+        self.args = args
+
+class Arg:
+    def __init__(self, level: int, arg: typing.Union[str, int]):
+        self.level = level
+        self.arg = arg
+
+class Seq:
+    def __init__(self, xs: typing.List['Object']):
+        self.xs = xs
+
+class Subscript:
+    def __init__(self, a: 'Object', b: 'Object'):
+        self.a = b
+        self.a = b
+
+class Superscript:
+    def __init__(self, a: 'Object', b: 'Object'):
+        self.a = b
+        self.a = b
+
+class Block:
+    def __init__(self, obj: 'Object'):
+        self.obj = obj
+
+def mkArg(a):
+    if isinstance(a, str):
+        return '#' + a
+    return Arg(*a)
+
+def Text(x: str) -> str:
+    return x
+
+Object = typing.Union[str, Seq, Arg, Command, Whitespace, Block, Subscript, Superscript]
+
+def arg_level_up(x):
+    if isinstance(x, str):
+        return '#' + x
+    level, arg = x
+    return level+1, arg
+
+def control(x):
+    return '\\' + x
+
+def add1(x):
+    return x + 1
+%%
+
+
+Arg : '\\' <Int> { (0, int($2.value)) }
+    | '\\' <Id>  { (0, $2.value) }
+    | <Int>      { $1.value }
+    | '#' Arg    { arg_level_up($2) }
+    ;
+
+
+Group : '{' Objects '}'           {  PosGroup(add1($1.offset),  Seq($2), $3.offset) }
+      | '{' '}'           {  PosGroup(add1($1.offset), None, $2.offset) }
+      | '{' '^' <Id> Objects '}'  {  KwGroup(add1($1.offset), $3.value, Seq($4), $5.offset) }
+      | '{' '^' <Id> '}'  {  KwGroup(add1($1.offset), $3.value, None, $4.offset) }
+      ;
+
+Groups : Group        {  [$1] }
+       | Groups Group { $1.append($2); $1 }
+       ;
+
+Command : <Id>        { Command($1.value, None) }
+        | <Id> Groups { Command($1.value, $2)   }
+        ;
+
+Atom   : '\\' Command { $2 }
+       | '\\' ('{' | '}' | '\\' | '#' | '^' | <Other> | <Int>)   { control($2.value) }
+       | '#' Arg      { mkArg($2) }
+       | <Id>         { Text($1.value) }
+       | <Int>        { Text($1.value) }
+       | <Other>      { Text($1.value) }
+       | '{' Objects '}' { Block(Seq($2)) }
+       | '{' '}' { Block(Seq([])) }
+       ;
+
+Script : Script '^' Atom  { Superscript($1, $3) }
+       | Script '_' Atom  { Subscript($1, $3) }
+       | Atom             { $1 }
+       ;
+
+Objects : Script               { [$1] }
+        | <WS>                 { [Whitespace($1.value)] }
+        | Objects Script       { $1.append($2); $1 }
+        | Objects <WS>         { $1.append(Whitespace($2.value)); $1 }
+        ;
+
+START : <BOF> Objects <EOF> { Seq($2) };
+unused : <COMMENT>;
