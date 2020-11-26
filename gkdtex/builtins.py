@@ -21,16 +21,14 @@ def register_pyfunc(n):
 
 @register_pyfunc("gkd@Verb")
 @register_pyfunc("gkd@verb")
-def verb(self: Interpreter, spans, tex_print, _):
+def verb(arg: Group, *, self: Interpreter, tex_print):
     r"""
     '\verb{ {1, 2, 3} }' -> ' {1, 2, 3} '
     """
-    span = spans[0]
-    if not isinstance(span, Span):
+    src = self.src
+    if not arg.offs:
         return
-    src = span.src
-    l, r = span.offs
-    contents = src[l:r]
+    contents = get_raw_from_span(Span(src, arg.offs))
     possible_delimiters = ('&', '-', '+', '!', '^', '#', '@', ':', '"', ';', '|')
     for e in possible_delimiters:
         if e in contents:
@@ -45,7 +43,7 @@ def verb(self: Interpreter, spans, tex_print, _):
 
 
 @register_pyfunc("gkd@argsrc")
-def argsrc(self: Interpreter, _, tex_print, arg):
+def argsrc(arg: Group, *, self: Interpreter, tex_print):
     r"""
     '\argsrc{#\0}' -> the verbatim content of arg 0.
     '\argsrc{#\a}' -> the verbatim content of arg 'a'.
@@ -58,10 +56,11 @@ def argsrc(self: Interpreter, _, tex_print, arg):
     1 +  1\a + 2
     P.S: the return will not expand again, unless you manually expand it.
     """
+    arg = arg.obj
     if isinstance(arg, Seq):
         arg = arg.xs[0]
-
     assert isinstance(arg, Arg)
+
     argname = arg.arg
     level = arg.level
     # get the parent frame
@@ -72,17 +71,18 @@ def argsrc(self: Interpreter, _, tex_print, arg):
         span = spans[names_offset[argname]]
     if not span:
         return
-    l, r = span.offs
-    tex_print(span.src[l:r])
+    tex_print(get_raw_from_span(span))
 
 @register_pyfunc("gkd@def")
-def define(self: Interpreter, spans, tex_print, sig, body):
+def define(sig: Group, body: Group, *, self: Interpreter, tex_print):
     r"""
     define call-by-value command
     \gkd@def{\a{^a}{^b}}{
         #\a(or #\1)  #\b(or #\2)
     }
     """
+    sig = sig.obj
+    body = body.obj
     if isinstance(sig, Seq):
         sig = sig.xs[0]
 
@@ -116,13 +116,16 @@ def define(self: Interpreter, spans, tex_print, sig, body):
 
 
 @register_pyfunc("gkd@def@lazy")
-def define(self: Interpreter, spans, tex_print, sig, body):
+def define(sig: Group, body: Group, *, self: Interpreter, tex_print):
     r"""
     define call-by-value command
     \gkd@def@lazy {\a{^a}{^b}}{
         #\a(or #\1)  #\b(or #\2)
     }
     """
+    sig = sig.obj
+    body = body.obj
+
     if isinstance(sig, Seq):
         sig = sig.xs[0]
 
@@ -155,31 +158,28 @@ def define(self: Interpreter, spans, tex_print, sig, body):
 
 
 @register_pyfunc("gkd@pyexec")
-def pyexec(self: Interpreter, spans, tex_print, _, expr):
-    span = spans[0] # type:Span
-    l, r = span.offs
-    options = span.src[l:r]
+def pyexec(options:Group, expr: Group, *, self: Interpreter, tex_print):
+    options = get_raw_from_span_params(self.src, options.offs)
+
     ns = self.state[PY_NAMESPACE]
     ns['tex_print'] = tex_print
     options = eval('dict(' + options + ')', ns)
     if options.get('expandbefore'):
-        code = eval_to_string(self, expr)
+        code = eval_to_string(self, expr.obj)
     else:
-        code = get_raw_from_span(spans[1])
+        code = get_raw_from_span_params(self.src, expr.offs)
     exec(code.strip(), ns)
 
 @register_pyfunc("gkd@pyeval")
-def pyeval(self: Interpreter, spans, tex_print, _, expr):
-    span = spans[0] # type:Span
-    l, r = span.offs
-    options = span.src[l:r]
+def pyeval(options:Group, expr:Group, *, self: Interpreter, tex_print):
+    options = get_raw_from_span_params(self.src, options.offs)
     ns = self.state[PY_NAMESPACE]
     ns['tex_print'] = tex_print
     options = eval('dict(' + options + ')', ns)
     if options.get('expandbefore'):
-        code = eval_to_string(self, expr)
+        code = eval_to_string(self, expr.obj)
     else:
-        code = get_raw_from_span(spans[1])
+        code = get_raw_from_span_params(self.src, expr.offs)
     result = str(eval(code.strip(), ns))
 
     if options.get("expandafter"):
@@ -190,9 +190,9 @@ def pyeval(self: Interpreter, spans, tex_print, _, expr):
 
 
 @register_pyfunc("gkd@usepackage")
-def using(self: Interpreter, spans, tex_print, _):
+def using(package: Group, *, self: Interpreter, tex_print):
     from importlib import import_module
-    packagename = get_raw_from_span(spans[0]).strip()
+    packagename = get_raw_from_span_params(self.src, package.offs).strip()
     m = import_module("{}".format(packagename))
     gkd_interface = getattr(m, 'GkdInterface', None)
     if gkd_interface is None:
@@ -207,8 +207,8 @@ def using(self: Interpreter, spans, tex_print, _):
         self.disposers.append(lambda self: disposer(self, tex_print))
 
 @register_pyfunc("gkd@input")
-def input_file(self: Interpreter, spans, tex_print, _):
+def input_file(filename: Group, self: Interpreter, tex_print):
     from pathlib import Path
-    path = get_raw_from_span(spans[0]).strip()
+    path = get_raw_from_span_params(self.src, filename.offs).strip()
     path = str(Path(self.filename).parent / path)
     self.run_file(path, tex_print)

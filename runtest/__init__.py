@@ -1,5 +1,6 @@
 from gkdtex.wrap import parse
 from gkdtex.interpreter import Interpreter, CBVFunction
+from gkdtex.developer_utilities import *
 import sys
 
 src = r"""
@@ -55,12 +56,9 @@ interpreter.src = src
 interpreter.globals['mk'] = CBVFunction([""], [None], dict(d=0), body)
 
 
-def verb(self: Interpreter, spans, tex_print, _):
-    span = spans[0]
-    src = span.src
-    l, r = span.offs
+def verb(a: Group, *, self: Interpreter, tex_print):
     tex_print('<<')
-    tex_print(src[l:r])
+    tex_print(get_raw_from_span_params(self.src, a.offs))
     tex_print('>>')
 
 interpreter.globals['verb'] = verb

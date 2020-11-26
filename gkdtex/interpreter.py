@@ -229,23 +229,17 @@ class Interpreter:
                 self.interp(tex_print, f.body)
                 self.frames.popleft()
                 return
-            else:  # py callable. Do not use keyword arguments
+            else:
                 args = obj.args or []
                 assert callable(f)
                 arguments = []
-                spans = []
-                src = self.src
+                kwargs = {}
                 for arg in args:
                     if isinstance(arg, KwGroup):
-                        raise ValueError("\\{} is a Python callable, "
-                                         "cannot accept keyword argument({}).".format(obj.cmd, arg.kw))
-                    if arg.obj is None:
-                        raise ValueError("\\{} is Python callable, whose {}"
-                                         "argument cannot be null.".format(obj.cmd, number_spelling(len(arguments))))
-                    arguments.append(arg.obj)
-                    spans.append(Span(src, arg.offs))
-
-                f(self, spans, tex_print, *arguments)
+                        kwargs[arg.kw] = arg
+                    else:
+                        arguments.append(arg)
+                f(*arguments, **kwargs, self=self, tex_print=tex_print)
 
         else:
             raise TypeError(obj)
@@ -263,3 +257,9 @@ def get_raw_from_span(span: Span):
         return ''
     l, r = span.offs
     return span.src[l:r]
+
+def get_raw_from_span_params(src: str, offs: 'typing.Optional[tuple[int, int]]'):
+    if not offs:
+        return ''
+    l, r = offs
+    return src[l:r]
