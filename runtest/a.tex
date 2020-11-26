@@ -1,27 +1,34 @@
 \a 1 2 3
-\define{\F{^a}{^b}}{(#\a + #\b)} \define{\G{^a teX1}{^b}}{(#\a + #\b)}
-\define{\K{}{ }}{
-    \argsrc{#\1}
+\gkd@def{\F{^a}{^b}}{(#\a + #\b)} \gkd@def{\G{^a teX1}{^b}}{(#\a + #\b)}
+\gkd@def@lazy{\K{}{ }}{
+    \gkd@argsrc{#\1}
 }
-\define{\L{a}{a}}{#\1 + #\1}
+\gkd@def{\L{a}{a}}{#\1 + #\1}
 \begin{center}
 \F{kkk}{2}
-\verb{  1 {x : int, y : float} 2 3 3}
+\gkd@verb{  1 {x : int, y : float} 2 3 3}
 \G{^b 2}
 \K{\a bb \K{a}{a} }
 
-\pyexec{expandbefore=False}{
+\gkd@pyexec{expandbefore=False}{
 x = "\F{1}"
 }
-\pyeval{expandbefore=True, expandafter=True}{\F{f"{x}"}{"{1}"}}
+\gkd@pyeval{expandbefore=True, expandafter=True}{\F{f"{x}"}{"{1}"}}
 \end{center}
 \L
 
-\pyeval{ }{1 + 1}
-\define{\add{}{}}{#\1 + #\2}
+\gkd@pyeval{ }{1 + 1}
+\gkd@def{\add{}{}}{#\1 + #\2}
 
-\pyexec{expandbefore=False}{
-    x = r"\add{1}"
+\gkd@pyexec{expandbefore=False}{
+    tex_print("hhh"); x = r"\add{1}"
 }
 
-\pyeval{expandbefore=False, expandafter=True}{x + "{1}"}
+\gkd@pyeval{expandbefore=False, expandafter=True}{x + "{1}"}
+
+\gkd@usepackage{plugin_A}
+\gkd@def{\AA{}{}{ }}{\narg}
+\AA{ }{ }
+
+\gkd@input{in.tex}
+\IceOneOOO

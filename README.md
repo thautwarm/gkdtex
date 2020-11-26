@@ -6,8 +6,10 @@ TeX that σ`∀´)!
 
 The syntax is compatible to TeX, and we execute a part of commands and generating TeX code.
 
+Usage: `gkdtex main.tex [--config_dir <str>] [--out_file <str>=main.out.tex]`.
+
 In GKD-TeX, there are 3 kinds of executable commands.
-The first of which is provided by Python script(in your `$PWD/.gkdrc.py`), you can check
+The first of which is provided by Python script(in your `$config_dir/.gkdrc.py`), you can check
 examples at Python module `gkdtex.builtins.*`.
 
 The other 2 executable commands are 1. CBV(Call By Value) Commands; 2. CBN(Call By Name) Commands.  
@@ -16,50 +18,71 @@ A CBN Command does not expand its arguments.
 
 Commands without any arguments shall be a constant string.
 
-```
-gkdtex main.tex [--config_path <str>] [--out_file <str>=main.out.tex]
-```
+
 
 ## CBV Commands
 
-`\define` : Define your own Call By Value command. 
+
+`\gkd@def` defines your own Call By Value command. You can define a Call By Name command by using `\gkd@def@lazy`.
 
 - Positional arguments
 
     ```tex
-     \define{\a{}}{#\1 + #\1}
+     \gkd@def{\a{}}{#\1 + #\1}
      \a{1} % '1 + 1'
     ```
  
 - Keyword arguments
 
     ```tex
-    \define{\a{^a}{^b}}{#\a^#\b}
+    \gkd@def{\a{^a}{^b}}{#\a^#\b}
     \a{^b x}{^a y} % 'y + x' 
     ```
   
 - Optional arguments
 
     ```tex
-    \define{\a{1}{^b k_a}}{ #\1 + #\b }
+    \gkd@def{\a{1}{^b k_a}}{ #\1 + #\b }
     \a % '1 + k_a'
     ```
-## `\pyexec` and `pyeval`
+## `\gkd@pyexec` and `\gkd@pyeval`
 
 ```tex
 
-\pyeval{ }{1 + 1} % 2
-\define{\add{}{}}{#\1 + #\2}
+\gkd@pyeval{ }{1 + 1} % 2
+\gkd@def{\add{}{}}{#\1 + #\2}
 
-\pyexec{expandbefore=False}{
+\gkd@pyexec{expandbefore=False}{
     x = r"\add{1}"
 }
 
-\pyeval{expandbefore=False, expandafter=True}{x + "{1}"} % 1 + 1
+\gkd@pyeval{expandbefore=False, expandafter=True}{x + "{1}"} % 1 + 1
 ```
 
-## `\verb`(requires `fancyvrb`)
+P.S: You can use Python variable `tex_print(string)` to put `string` in the generated tex file,
+     and you can use `self` to access the interpreter in case you need to inspect information such as
+     frames(`self.frames`), current filename(`self.filename`), current source code(`self.src`), etc.
+
+## `\gkd@verb`(requires `fancyvrb`)
 
 ```tex
-\verb{ {1, 2, 3}  a} % \verb& {1, 2, 3}  a&
+\gkd@verb{ {1, 2, 3}  a} % \verb& {1, 2, 3}  a&
 ```
+
+## `\gkd@usepackage`
+
+A GKD package is made from a Python module.
+`\gkd@usepackage{module_name}` will do `import("module_name")`.
+
+The module search path is Python `sys.path`, with `$config_dir` appended.
+
+In that module you should provide a namespace `GkdInterface`, `GkdInterface` should have 1 or 2 elements,
+`GkdInterface.load` and `GkdInterface.dispose`(optional).
+
+Check `runtest/plugin_A.py` for how to implement `load` or `dispose`.
+
+## `\gkd@input`
+
+`\gkd@input{some_file}` literally inputs source code in `some_file`.
+
+Note that `some_file` is the relative path. The base is the directory of the proceeding document.  

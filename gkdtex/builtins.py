@@ -1,9 +1,7 @@
-from gkdtex.interpreter import Interpreter, Span, eval_to_string, CBVFunction, CBNFunction, get_raw_from_span
-from gkdtex.parse import *
+from gkdtex.developer_utilities import *
 from gkdtex.wrap import parse
 import io
 
-interpreter = Interpreter()
 PY_NAMESPACE = 'py_namespace'
 
 def _init_py_ns(self: Interpreter):
@@ -12,17 +10,17 @@ def _init_py_ns(self: Interpreter):
     """
     self.state[PY_NAMESPACE] = {'self': self}
 
-Interpreter.initializers.append(_init_py_ns)
+Interpreter.default_initializers.append(_init_py_ns)
 
 def register_pyfunc(n):
     def _(f):
-        interpreter.globals[n] = f
+        Interpreter.default_globals[n] = f
         return f
     return _
 
 
-@register_pyfunc("Verb")
-@register_pyfunc("verb")
+@register_pyfunc("gkd@Verb")
+@register_pyfunc("gkd@verb")
 def verb(self: Interpreter, spans, tex_print, _):
     r"""
     '\verb{ {1, 2, 3} }' -> ' {1, 2, 3} '
@@ -46,7 +44,7 @@ def verb(self: Interpreter, spans, tex_print, _):
                      "delimiters({})".format(contents[:50], ', '.join(map(repr, possible_delimiters))))
 
 
-@register_pyfunc("argsrc")
+@register_pyfunc("gkd@argsrc")
 def argsrc(self: Interpreter, _, tex_print, arg):
     r"""
     '\argsrc{#\0}' -> the verbatim content of arg 0.
@@ -77,11 +75,11 @@ def argsrc(self: Interpreter, _, tex_print, arg):
     l, r = span.offs
     tex_print(span.src[l:r])
 
-@register_pyfunc("define")
+@register_pyfunc("gkd@def")
 def define(self: Interpreter, spans, tex_print, sig, body):
     r"""
     define call-by-value command
-    \define{\a{^a}{^b}}{
+    \gkd@def{\a{^a}{^b}}{
         #\a(or #\1)  #\b(or #\2)
     }
     """
@@ -117,11 +115,11 @@ def define(self: Interpreter, spans, tex_print, sig, body):
 
 
 
-@register_pyfunc("defineLazy")
+@register_pyfunc("gkd@def@lazy")
 def define(self: Interpreter, spans, tex_print, sig, body):
     r"""
     define call-by-value command
-    \define{\a{^a}{^b}}{
+    \gkd@def@lazy {\a{^a}{^b}}{
         #\a(or #\1)  #\b(or #\2)
     }
     """
@@ -156,7 +154,7 @@ def define(self: Interpreter, spans, tex_print, sig, body):
     self.globals[sig.cmd] = CBNFunction(defaults, default_spans, name_offsets, body)
 
 
-@register_pyfunc("pyexec")
+@register_pyfunc("gkd@pyexec")
 def pyexec(self: Interpreter, spans, tex_print, _, expr):
     span = spans[0] # type:Span
     l, r = span.offs
@@ -170,7 +168,7 @@ def pyexec(self: Interpreter, spans, tex_print, _, expr):
         code = get_raw_from_span(spans[1])
     exec(code.strip(), ns)
 
-@register_pyfunc("pyeval")
+@register_pyfunc("gkd@pyeval")
 def pyeval(self: Interpreter, spans, tex_print, _, expr):
     span = spans[0] # type:Span
     l, r = span.offs
@@ -189,3 +187,28 @@ def pyeval(self: Interpreter, spans, tex_print, _, expr):
         self.interp(tex_print, result)
     else:
         tex_print(result)
+
+
+@register_pyfunc("gkd@usepackage")
+def using(self: Interpreter, spans, tex_print, _):
+    from importlib import import_module
+    packagename = get_raw_from_span(spans[0]).strip()
+    m = import_module("{}".format(packagename))
+    gkd_interface = getattr(m, 'GkdInterface', None)
+    if gkd_interface is None:
+        raise ValueError("Python module {} doesn't implement its GkdInterface.".format(packagename))
+
+    loader = getattr(gkd_interface, 'load', None)
+    if loader is None:
+        raise ValueError("{} hasn't provided a 'load' function.".format(packagename))
+    loader(self, tex_print)
+    disposer = getattr(gkd_interface, 'dispose', None)
+    if disposer is not None:
+        self.disposers.append(lambda self: disposer(self, tex_print))
+
+@register_pyfunc("gkd@input")
+def input_file(self: Interpreter, spans, tex_print, _):
+    from pathlib import Path
+    path = get_raw_from_span(spans[0]).strip()
+    path = str(Path(self.filename).parent / path)
+    self.run_file(path, tex_print)

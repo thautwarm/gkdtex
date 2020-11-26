@@ -46,22 +46,32 @@ class CBNFunction:
 
 
 class Interpreter:
-    initializers = []
+    default_initializers = []
+    default_disposers = []
+    default_globals = {}
     def __init__(self):
         ### Commands
-        self.globals = dict()
+        self.globals = Interpreter.default_globals.copy()
 
         ### Contextual Fields
         self.filename = None
         self.src = None
 
-        self.state = {}
-
+        
         ### The Frames field has a constant reference.
         self.frames = deque() # type: typing.Deque[tuple[str, list[typing.Optional[Span]], list[Object], dict[str, int]]]
 
+        ###
+        self.state = {}
+        self.initializers = Interpreter.default_initializers.copy()
+        self.disposers = Interpreter.default_disposers.copy()
+        
     def initialize(self):
         for each in self.initializers:
+            each(self)
+    
+    def dispose(self):
+        for each in self.disposers:
             each(self)
 
     def _load_src(self):
@@ -101,7 +111,15 @@ class Interpreter:
         elif isinstance(obj, str):
             tex_print(obj)
         elif isinstance(obj, Seq):
-            self.interp_many(tex_print, obj.xs)
+            xs = obj.xs
+            start = 0
+            end = None
+            if xs:
+                if isinstance(xs[0], Whitespace):
+                    start = 1
+                if isinstance(xs[-1], Whitespace):
+                    end = -1
+            self.interp_many(tex_print, xs[start:end])
         elif isinstance(obj, Subscript):
             self.interp(tex_print, obj.a)
             tex_print('_')
