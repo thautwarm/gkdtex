@@ -4,7 +4,7 @@ from pathlib import Path
 with Path('README.md').open() as readme:
     readme = readme.read()
 
-version = 2.0
+version = 0.1
 
 setup(
     name='gkdtex',
