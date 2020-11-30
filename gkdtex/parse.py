@@ -71,13 +71,13 @@ class Seq:
 
 class Subscript:
     def __init__(self, a: 'Object', b: 'Object'):
-        self.a = b
-        self.a = b
+        self.a = a
+        self.b = b
 
 class Superscript:
     def __init__(self, a: 'Object', b: 'Object'):
-        self.a = b
-        self.a = b
+        self.a = a
+        self.b = b
 
 class Block:
     def __init__(self, obj: 'Object'):

@@ -123,11 +123,11 @@ class Interpreter:
         elif isinstance(obj, Subscript):
             self.interp(tex_print, obj.a)
             tex_print('_')
-            self.interp(tex_print, obj.a)
+            self.interp(tex_print, obj.b)
         elif isinstance(obj, Superscript):
             self.interp(tex_print, obj.a)
             tex_print('^')
-            self.interp(tex_print, obj.a)
+            self.interp(tex_print, obj.b)
 
         elif isinstance(obj, Block):
             tex_print('{')
