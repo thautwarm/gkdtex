@@ -180,12 +180,17 @@ class Interpreter:
                 spans = f.default_spans.copy()
                 name_offsets = f.name_offsets
                 src = self.src
+                i = 0
+
                 for off, arg in enumerate(args):
+                    off = i
                     if isinstance(arg, KwGroup):
                         try:
                             off = name_offsets[arg.kw]
                         except KeyError:
                             raise ValueError("\\{} has no keyword argument {}".format(obj.cmd, arg.kw))
+                    else:
+                        i += 1
 
                     if arg.obj is not None:
                         self.interp(arg_io.write, arg.obj)
@@ -207,12 +212,17 @@ class Interpreter:
                 spans = f.default_spans.copy()
                 name_offsets = f.name_offsets
                 src = self.src
-                for off, arg in enumerate(args):
+                i = 0
+
+                for arg in args:
+                    off = i
                     if isinstance(arg, KwGroup):
                         try:
                             off = name_offsets[arg.kw]
                         except KeyError:
                             raise ValueError("\\{} has no keyword argument {}".format(obj.cmd, arg.kw))
+                    else:
+                        i += 1
 
                     # noinspection PyDefaultArgument
                     if arg.obj:
