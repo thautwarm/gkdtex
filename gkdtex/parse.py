@@ -324,7 +324,7 @@ def mk_parser():
                 rbnf_tmp_1_ = rbnf_tmp_0
                 lcl_7 = (True, rbnf_tmp_1_)
                 lcl_1 = lcl_7
-            elif (lcl_2 == 7):
+            elif (lcl_2 == 8):
                 lcl_7 = rbnf_named_parse_Script(builtin_state, builtin_tokens)
                 rbnf_named__check_1 = lcl_7
                 lcl_7 = rbnf_named__check_1[0]
@@ -424,7 +424,7 @@ def mk_parser():
         if lcl_0:
             lcl_2 = builtin_tokens.array[(builtin_tokens.offset + 0)]
             lcl_2 = lcl_2.idint
-            if (lcl_2 == 8):
+            if (lcl_2 == 7):
                 _rbnf_old_offset = builtin_tokens.offset
                 _rbnf_cur_token = builtin_tokens.array[_rbnf_old_offset]
                 builtin_tokens.offset = (_rbnf_old_offset + 1)
@@ -792,7 +792,7 @@ def mk_parser():
                                 lcl_7 = lcl_8
                             lcl_6 = lcl_7
                         lcl_4 = lcl_6
-                    elif (lcl_5 == 7):
+                    elif (lcl_5 == 8):
                         lcl_6 = rbnf_named_parse_Objects(builtin_state, builtin_tokens)
                         rbnf_named__check_1 = lcl_6
                         lcl_6 = rbnf_named__check_1[0]
@@ -948,6 +948,17 @@ def mk_parser():
                         rbnf_tmp_1_ = lcl_6
                         lcl_6 = (True, rbnf_tmp_1_)
                         lcl_4 = lcl_6
+                    elif (lcl_5 == 7):
+                        _rbnf_old_offset = builtin_tokens.offset
+                        _rbnf_cur_token = builtin_tokens.array[_rbnf_old_offset]
+                        builtin_tokens.offset = (_rbnf_old_offset + 1)
+                        lcl_6 = _rbnf_cur_token
+                        rbnf_tmp_1 = lcl_6
+                        lcl_6 = rbnf_tmp_1.value
+                        lcl_6 = control(lcl_6)
+                        rbnf_tmp_1_ = lcl_6
+                        lcl_6 = (True, rbnf_tmp_1_)
+                        lcl_4 = lcl_6
                     elif (lcl_5 == 6):
                         _rbnf_old_offset = builtin_tokens.offset
                         _rbnf_cur_token = builtin_tokens.array[_rbnf_old_offset]
@@ -981,7 +992,7 @@ def mk_parser():
                         rbnf_tmp_1_ = lcl_6
                         lcl_6 = (True, rbnf_tmp_1_)
                         lcl_4 = lcl_6
-                    elif (lcl_5 == 7):
+                    elif (lcl_5 == 8):
                         _rbnf_old_offset = builtin_tokens.offset
                         _rbnf_cur_token = builtin_tokens.array[_rbnf_old_offset]
                         builtin_tokens.offset = (_rbnf_old_offset + 1)
@@ -1049,7 +1060,7 @@ def mk_parser():
                     lcl_4 = (True, rbnf_tmp_1_)
                     lcl_3 = lcl_4
                 lcl_1 = lcl_3
-            elif (lcl_2 == 7):
+            elif (lcl_2 == 8):
                 _rbnf_old_offset = builtin_tokens.offset
                 _rbnf_cur_token = builtin_tokens.array[_rbnf_old_offset]
                 builtin_tokens.offset = (_rbnf_old_offset + 1)
@@ -1442,7 +1453,7 @@ def mk_parser():
                                         lcl_11 = lcl_12
                                     lcl_10 = lcl_11
                                 lcl_6 = lcl_10
-                            elif (lcl_7 == 7):
+                            elif (lcl_7 == 8):
                                 lcl_10 = rbnf_named_parse_Objects(builtin_state, builtin_tokens)
                                 rbnf_named__check_3 = lcl_10
                                 lcl_10 = rbnf_named__check_3[0]
@@ -1686,7 +1697,7 @@ def mk_parser():
                             lcl_11 = lcl_12
                         lcl_10 = lcl_11
                     lcl_2 = lcl_10
-                elif (lcl_3 == 7):
+                elif (lcl_3 == 8):
                     lcl_10 = rbnf_named_parse_Objects(builtin_state, builtin_tokens)
                     rbnf_named__check_1 = lcl_10
                     lcl_10 = rbnf_named__check_1[0]
@@ -1914,7 +1925,7 @@ def mk_parser():
                 rbnf_tmp_1_ = lcl_3
                 lcl_3 = rbnf_named_lr_loop_Objects(rbnf_tmp_1_, builtin_state, builtin_tokens)
                 lcl_1 = lcl_3
-            elif (lcl_2 == 7):
+            elif (lcl_2 == 8):
                 lcl_3 = rbnf_named_parse_Script(builtin_state, builtin_tokens)
                 rbnf_named__check_0 = lcl_3
                 lcl_3 = rbnf_named__check_0[0]

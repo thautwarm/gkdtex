@@ -96,7 +96,7 @@ Command : <Id>        { Command($1.value, None) }
         ;
 
 Atom   : '\\' Command { $2 }
-       | '\\' ('{' | '}' | '\\' | '#' | '^' | <Other> | <Int>)   { control($2.value) }
+       | '\\' ('{' | '}' | '\\' | '#' | '^' | '_' | <Other> | <Int>)   { control($2.value) }
        | '#' Arg      { mkArg($2) }
        | <Id>         { Text($1.value) }
        | <Int>        { Text($1.value) }
