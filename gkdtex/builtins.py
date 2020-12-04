@@ -158,31 +158,38 @@ def define(sig: Group, body: Group, *, self: Interpreter, tex_print):
 
 
 @register_pyfunc("gkd@pyexec")
-def pyexec(options:Group, expr: Group, *, self: Interpreter, tex_print):
-    options = get_raw_from_span_params(self.src, options.offs)
-
+def pyexec(expr: Group, *, self: Interpreter, tex_print, expand:Group = None):
     ns = self.state[PY_NAMESPACE]
     ns['tex_print'] = tex_print
-    options = eval('dict(' + options + ')', ns)
-    if options.get('expandbefore'):
+    if expand:
+        expand = get_raw_from_span_params(self.src, expand.offs)
+        expand = eval('dict(' + expand + ')', ns)
+    else:
+        expand = {}
+
+    if expand.get('before'):
         code = eval_to_string(self, expr.obj)
     else:
         code = get_raw_from_span_params(self.src, expr.offs)
     exec(code.strip(), ns)
 
 @register_pyfunc("gkd@pyeval")
-def pyeval(options:Group, expr:Group, *, self: Interpreter, tex_print):
-    options = get_raw_from_span_params(self.src, options.offs)
+def pyeval(expr:Group, *, self: Interpreter, tex_print, expand:Group = None):
     ns = self.state[PY_NAMESPACE]
     ns['tex_print'] = tex_print
-    options = eval('dict(' + options + ')', ns)
-    if options.get('expandbefore'):
+    if expand:
+        expand = get_raw_from_span_params(self.src, expand.offs)
+        expand = eval('dict(' + expand + ')', ns)
+    else:
+        expand = {}
+
+    if expand.get('before'):
         code = eval_to_string(self, expr.obj)
     else:
         code = get_raw_from_span_params(self.src, expr.offs)
     result = str(eval(code.strip(), ns))
 
-    if options.get("expandafter"):
+    if expand.get("after"):
         result = parse(result, '<eval>')
         self.interp(tex_print, result)
     else:

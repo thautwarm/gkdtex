@@ -71,6 +71,9 @@ def control(x):
 
 def add1(x):
     return x + 1
+
+def word_end(tk):
+    return tk.offset + len(tk.value)
 %%
 
 
@@ -83,8 +86,8 @@ Arg : '\\' <Int> { (0, int($2.value)) }
 
 Group : '{' Objects '}'           {  PosGroup(add1($1.offset),  Seq($2), $3.offset) }
       | '{' '}'           {  PosGroup(add1($1.offset), None, $2.offset) }
-      | '{' '^' <Id> Objects '}'  {  KwGroup(add1($1.offset), $3.value, Seq($4), $5.offset) }
-      | '{' '^' <Id> '}'  {  KwGroup(add1($1.offset), $3.value, None, $4.offset) }
+      | '{' '^' <Id> Objects '}'  {  KwGroup(word_end($3), $3.value, Seq($4), $5.offset) }
+      | '{' '^' <Id> '}'  {  KwGroup(word_end($3), $3.value, None, $4.offset) }
       ;
 
 Groups : Group        {  [$1] }

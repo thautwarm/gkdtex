@@ -10,21 +10,21 @@
 \G{^b 2}
 \K{\a bb \K{a}{a} }
 
-\gkd@pyexec{expandbefore=False}{
+\gkd@pyexec{^expand before=False}{
 x = "\F{1}"
 }
-\gkd@pyeval{expandbefore=True, expandafter=True}{\F{f"{x}"}{"{1}"}}
+\gkd@pyeval{^expand before=True, after=True}{\F{f"{x}"}{"{1}"}}
 \end{center}
 \L
 
-\gkd@pyeval{ }{1 + 1}
+\gkd@pyeval{1 + 1}
 \gkd@def{\add{}{}}{#\1 + #\2}
 
-\gkd@pyexec{expandbefore=False}{
+\gkd@pyexec{^expand before=False}{
     tex_print("hhh"); x = r"\add{1}"
 }
 
-\gkd@pyeval{expandbefore=False, expandafter=True}{x + "{1}"}
+\gkd@pyeval{^expand before=False, after=True}{x + "{1}"}
 
 \gkd@usepackage{plugin_A}
 \gkd@def{\AA{}{}{ }}{\narg}

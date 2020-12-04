@@ -104,6 +104,9 @@ def control(x):
 
 def add1(x):
     return x + 1
+
+def word_end(tk):
+    return tk.offset + len(tk.value)
 from typing import Generic, TypeVar
 T = TypeVar('T')
 
@@ -1289,8 +1292,7 @@ def mk_parser():
                                 builtin_tokens.offset = (_rbnf_old_offset + 1)
                                 lcl_8 = _rbnf_cur_token
                                 rbnf_tmp_3 = lcl_8
-                                lcl_8 = rbnf_tmp_0.offset
-                                lcl_8 = add1(lcl_8)
+                                lcl_8 = word_end(rbnf_tmp_2)
                                 lcl_9 = rbnf_tmp_2.value
                                 lcl_10 = rbnf_tmp_3.offset
                                 lcl_10 = KwGroup(lcl_8, lcl_9, None, lcl_10)
@@ -1325,8 +1327,7 @@ def mk_parser():
                                         lcl_9 = (False, lcl_9)
                                         lcl_8 = lcl_9
                                     else:
-                                        lcl_9 = rbnf_tmp_0.offset
-                                        lcl_9 = add1(lcl_9)
+                                        lcl_9 = word_end(rbnf_tmp_2)
                                         lcl_11 = rbnf_tmp_2.value
                                         lcl_12 = Seq(rbnf_tmp_3)
                                         lcl_13 = rbnf_tmp_4.offset
@@ -1364,8 +1365,7 @@ def mk_parser():
                                         lcl_12 = (False, lcl_12)
                                         lcl_11 = lcl_12
                                     else:
-                                        lcl_12 = rbnf_tmp_0.offset
-                                        lcl_12 = add1(lcl_12)
+                                        lcl_12 = word_end(rbnf_tmp_2)
                                         lcl_13 = rbnf_tmp_2.value
                                         lcl_8 = Seq(rbnf_tmp_3)
                                         lcl_9 = rbnf_tmp_4.offset
@@ -1403,8 +1403,7 @@ def mk_parser():
                                         lcl_12 = (False, lcl_12)
                                         lcl_11 = lcl_12
                                     else:
-                                        lcl_12 = rbnf_tmp_0.offset
-                                        lcl_12 = add1(lcl_12)
+                                        lcl_12 = word_end(rbnf_tmp_2)
                                         lcl_13 = rbnf_tmp_2.value
                                         lcl_8 = Seq(rbnf_tmp_3)
                                         lcl_9 = rbnf_tmp_4.offset
@@ -1442,8 +1441,7 @@ def mk_parser():
                                         lcl_12 = (False, lcl_12)
                                         lcl_11 = lcl_12
                                     else:
-                                        lcl_12 = rbnf_tmp_0.offset
-                                        lcl_12 = add1(lcl_12)
+                                        lcl_12 = word_end(rbnf_tmp_2)
                                         lcl_13 = rbnf_tmp_2.value
                                         lcl_8 = Seq(rbnf_tmp_3)
                                         lcl_9 = rbnf_tmp_4.offset
@@ -1481,8 +1479,7 @@ def mk_parser():
                                         lcl_12 = (False, lcl_12)
                                         lcl_11 = lcl_12
                                     else:
-                                        lcl_12 = rbnf_tmp_0.offset
-                                        lcl_12 = add1(lcl_12)
+                                        lcl_12 = word_end(rbnf_tmp_2)
                                         lcl_13 = rbnf_tmp_2.value
                                         lcl_8 = Seq(rbnf_tmp_3)
                                         lcl_9 = rbnf_tmp_4.offset
@@ -1520,8 +1517,7 @@ def mk_parser():
                                         lcl_12 = (False, lcl_12)
                                         lcl_11 = lcl_12
                                     else:
-                                        lcl_12 = rbnf_tmp_0.offset
-                                        lcl_12 = add1(lcl_12)
+                                        lcl_12 = word_end(rbnf_tmp_2)
                                         lcl_13 = rbnf_tmp_2.value
                                         lcl_8 = Seq(rbnf_tmp_3)
                                         lcl_9 = rbnf_tmp_4.offset
@@ -1559,8 +1555,7 @@ def mk_parser():
                                         lcl_12 = (False, lcl_12)
                                         lcl_11 = lcl_12
                                     else:
-                                        lcl_12 = rbnf_tmp_0.offset
-                                        lcl_12 = add1(lcl_12)
+                                        lcl_12 = word_end(rbnf_tmp_2)
                                         lcl_13 = rbnf_tmp_2.value
                                         lcl_8 = Seq(rbnf_tmp_3)
                                         lcl_9 = rbnf_tmp_4.offset
