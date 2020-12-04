@@ -4,7 +4,7 @@ from pathlib import Path
 with Path('README.md').open() as readme:
     readme = readme.read()
 
-version = "0.3.1"
+version = "0.4.0"
 
 setup(
     name='gkdtex',
@@ -15,7 +15,7 @@ setup(
     long_description=readme,
     long_description_content_type="text/markdown",
     license='mit',
-    python_requires='>=3.7.0',
+    python_requires='>=3.6.0',
     url='https://github.com/thautwarm/gkdtex',
     author='thautwarm',
     author_email='twshere@outlook.com',
@@ -24,6 +24,7 @@ setup(
     install_requires=['wisepy2 >= 1.0'],
     platforms="any",
     classifiers=[
+        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: Implementation :: CPython",
