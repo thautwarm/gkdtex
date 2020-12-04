@@ -112,17 +112,16 @@ Note that `some_file` is the relative path. The base is the directory of the pro
 
 ```tex
 
-\gkd@pyeval{ }{1 + 1} % 2
+\gkd@pyeval{1 + 1} % 2
 \gkd@def{\add{}{}}{#\1 + #\2}
 
-\gkd@pyexec{expandbefore=False}{
+\gkd@pyexec{
     x = r"\add{1}"
 }
 
-\gkd@pyeval{expandbefore=False, expandafter=True}{x + "{1}"} % 1 + 1
+\gkd@pyeval{^expand after=True}{x + "{1}"} % 1 + 1
 ```
 
 P.S: You can use Python variable `tex_print(string)` to put `string` in the generated tex file,
-     and you can use `self` to access the interpreter in case you need to inspect information such as
-     frames(`self.frames`), current filename(`self.filename`), current source code(`self.src`), etc.
+     and you can use `self` to access the interpreter in case you need to inspect information such as frames(`self.frames`), current filename(`self.filename`), current source code(`self.src`), etc.
 
